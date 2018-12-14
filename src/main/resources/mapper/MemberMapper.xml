@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ku771.mapper.MemberMapper" >
+  <resultMap id="BaseResultMap" type="com.ku771.pojo.Member" >
+    <id column="memberId" property="memberId" jdbcType="INTEGER" />
+    <result column="memberNum" property="memberNum" jdbcType="VARCHAR" />
+    <result column="nickName" property="nickName" jdbcType="VARCHAR" />
+    <result column="distributorNum" property="distributorNum" jdbcType="VARCHAR" />
+    <result column="password" property="password" jdbcType="VARCHAR" />
+    <result column="phoneNum" property="phoneNum" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="level" property="level" jdbcType="VARCHAR" />
+    <result column="accpetDiscount" property="accpetDiscount" jdbcType="INTEGER" />
+    <result column="weChatNum" property="weChatNum" jdbcType="VARCHAR" />
+    <result column="QQNum" property="QQNum" jdbcType="INTEGER" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="drawingPassword" property="drawingPassword" jdbcType="VARCHAR" />
+    <result column="isUseDrawingPassword" property="isUseDrawingPassword" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <resultMap id="MemberLoadMap" type="com.ku771.pojo.example.MemberLoadExample" >
+    <id column="memberId" property="memberId" jdbcType="INTEGER" />
+    <result column="nickName" property="nickName" jdbcType="VARCHAR" />
+    <result column="phoneNum" property="phoneNum" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="accpetDiscount" property="accpetDiscount" jdbcType="INTEGER" />
+    <result column="weChatNum" property="weChatNum" jdbcType="VARCHAR" />
+    <result column="QQNum" property="QQNum" jdbcType="INTEGER" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="isUseDrawingPassword" property="isUseDrawingPassword" jdbcType="INTEGER" />
+    <result column="accountName" property="accountName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    memberId, memberNum, nickName,distributorNum,password,phoneNum,email,level,accpetDiscount,weChatNum,QQNum,province,city,address,
+    drawingPassword,isUseDrawingPassword
+  </sql>
+  
+  <sql id="Member_Load_Column_List" >
+    memberId, nickName,phoneNum,email,accpetDiscount,weChatNum,QQNum,province,city,address,isUseDrawingPassword
+  </sql>
+  
+  <!-- 根据会员ID查询对应会员资料 -->
+  <select id="getMemberInfo" resultMap="MemberLoadMap" parameterType="int" >
+	  SELECT m.memberId, m.nickName,m.phoneNum,m.email,m.accpetDiscount,m.weChatNum,m.QQNum,m.province,m.city,m.address,
+	  m.isUseDrawingPassword,b.accountName
+	  FROM member m
+	  INNER JOIN bank_card b
+	  on b.memberId = m.memberId
+	  WHERE m.memberId = #{memberId}
+  </select>
+  
+  <!-- 检测会员账号是否可注册 -->
+  <select id="checkMemberNum" resultType="int" parameterType="string" >
+	  SELECT COUNT(*)
+	  FROM member
+	  WHERE memberNum = #{memberNum}
+  </select>
+  
+  <!-- 会员登录，并返回会员信息 -->
+  <select id="login" resultMap="BaseResultMap" parameterType="map" >
+	  SELECT 
+	  <include refid="Base_Column_List" />
+	  FROM member
+	  WHERE memberNum = #{memberNum}
+	  AND password = #{password}
+  </select>
+  
+  <!-- 检测提款密码是否正确 -->
+  <select id="checkDrawingPw" resultType="int" parameterType="map" >
+	  SELECT COUNT(*)
+	  FROM member
+	  WHERE memberId = #{memberId}
+	  AND drawingPassword = #{drawingPassword}
+  </select>
+  
+  <!-- 检测新账号密码是否和原密码相同 -->
+  <select id="checkUpdatePassword" resultType="int" parameterType="map" >
+	  SELECT COUNT(*)
+	  FROM member
+	  WHERE password = #{password}
+  </select>
+  
+  <!-- 检测新提款密码是否和原密码相同 -->
+  <select id="checkUpdateDrawingPassword" resultType="int" parameterType="map" >
+	  SELECT COUNT(*)
+	  FROM member
+	  WHERE drawingPassword = #{drawingPassword}
+  </select>
+  
+  <!-- 判断新账户密码是否等于原提款密码 -->
+  <select id="checkNewPasswordWhetherEqualsOldDrawingPassword" resultType="int" parameterType="map" >
+	  SELECT COUNT(*)
+	  FROM member
+	  WHERE password = #{drawingPassword}
+  </select>
+  
+  <!-- 判断新提款密码是否等于原账户密码 -->
+  <select id="checkNewDrawingPasswordWhetherEqualsOldPassword" resultType="int" parameterType="map" >
+	  SELECT COUNT(*)
+	  FROM member
+	  WHERE drawingPassword = #{password}
+  </select>
+  
+  <!-- 获取提款次数 -->
+  <select id="getDrawingFrequency" resultType="int" parameterType="int" >
+	  SELECT drwingFrequency
+	  FROM member
+	  WHERE memberId = #{memberId}
+  </select>
+  
+  <!-- 注册 -->
+  <insert id="register" useGeneratedKeys="true" keyProperty="memberId" parameterType="com.ku771.pojo.Member">
+    insert into member
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="memberId != null" >
+        memberId,
+      </if>
+      <if test="memberNum != null" >
+        memberNum,
+      </if>
+      <if test="nickName != null" >
+        nickName,
+      </if>
+      <if test="distributorNum != null" >
+        distributorNum,
+      </if>
+      <if test="password != null" >
+        password,
+      </if>
+      <if test="phoneNum != null" >
+        phoneNum,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="accpetDiscount != null" >
+        accpetDiscount,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="memberId != null" >
+        #{memberId,jdbcType=INTEGER},
+      </if>
+      <if test="memberNum != null" >
+        #{memberNum,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null" >
+        #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="distributorNum != null" >
+        #{distributorNum,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNum != null" >
+        #{phoneNum,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="accpetDiscount != null" >
+        #{accpetDiscount,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 更新会员信息 -->
+  <update id="updateMember" parameterType="com.ku771.pojo.Member" >
+    update member
+    <set >
+      <if test="memberNum != null" >
+        memberNum = #{memberNum,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null" >
+        nickName = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="distributorNum != null" >
+        distributorNum = #{distributorNum,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="phoneNum != null" >
+        phoneNum = #{phoneNum,jdbcType=VARCHAR},
+      </if>
+      <!-- <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if> -->
+      <if test="level != null" >
+        level = #{level,jdbcType=VARCHAR},
+      </if>
+      <if test="accpetDiscount != null" >
+        accpetDiscount = #{accpetDiscount,jdbcType=INTEGER},
+      </if>
+      <if test="weChatNum != null" >
+        weChatNum = #{weChatNum,jdbcType=VARCHAR},
+      </if>
+      <if test="QQNum != null" >
+        QQNum = #{QQNum,jdbcType=INTEGER},
+      </if>
+      <if test="province != null" >
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="drawingPassword != null" >
+        drawingPassword = #{drawingPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="isUseDrawingPassword != null" >
+        isUseDrawingPassword = #{isUseDrawingPassword,jdbcType=INTEGER},
+      </if>
+      <if test="drwingFrequency != null" >
+        drwingFrequency = #{drwingFrequency,jdbcType=INTEGER},
+      </if>
+    </set>
+    where memberId = #{memberId,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 更新会员邮件 -->
+  <update id="updateEmail" parameterType="com.ku771.pojo.Member" >
+    update member
+    <set >
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where memberId = #{memberId,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 重置提款次数 -->
+  <update id="resetDrwingFrequency" parameterType="com.ku771.pojo.Member" >
+    update member
+    set drwingFrequency = 0
+  </update>
+  
+</mapper>

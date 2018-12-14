@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ku771.mapper.TradingCenterMapper" >
+  <resultMap id="TradingResultMap" type="com.ku771.pojo.TradingCenter" >
+    <id column="tradingId" property="tradingId" jdbcType="INTEGER" />
+    <result column="memberId" property="memberId" jdbcType="INTEGER" />
+    <result column="tradingDate" property="tradingDate" jdbcType="VARCHAR" />
+    <result column="tradingType" property="tradingType" jdbcType="INTEGER" />
+    <result column="tradingContent" property="tradingContent" jdbcType="VARCHAR" />
+    <result column="accountNum" property="accountNum" jdbcType="INTEGER" />
+    <result column="tradingMoney" property="tradingMoney" jdbcType="DOUBLE" />
+    <result column="tradingStatus" property="tradingStatus" jdbcType="INTEGER" />
+    <result column="discount" property="discount" jdbcType="VARCHAR" />
+    <result column="serviceCharge" property="serviceCharge" jdbcType="DOUBLE" />
+    <result column="balance" property="balance" jdbcType="DOUBLE" />
+  </resultMap>
+  
+  
+  <!-- 获取总条数 -->
+  <select id="getTotal" parameterType="map" resultType="int">
+     SELECT COUNT(*)
+     FROM trading_center
+     WHERE 1=1
+     <if test="tradingType != null">
+      AND tradingType = #{tradingType}
+     </if>
+     <if test="tradingStatus != null">
+      AND tradingStatus = #{tradingStatus}
+     </if>
+     <if test="memberId != null">
+      AND memberId = #{memberId}
+     </if>
+  </select>
+  
+  <!-- 分页查询交易记录 -->
+  <select id="getTradingRecordList" parameterType="map" resultMap="TradingResultMap">
+	 SELECT tradingId,memberId,date_format(tradingDate,'%Y-%m-%d %H:%m:%s')tradingDate,tradingType,tradingContent,accountNum,tradingMoney,tradingStatus,discount,serviceCharge,balance
+	 FROM trading_center
+     WHERE 1=1
+     <if test="tradingType != null">
+      AND tradingType = #{tradingType}
+     </if>
+     <if test="tradingStatus != null">
+      AND tradingStatus = #{tradingStatus}
+     </if>
+     <if test="memberId != null">
+      AND memberId = #{memberId}
+     </if>
+  </select>
+  
+  <!-- 新增未完成的交易记录 -->
+  <insert id="addTradingRecord" parameterType="com.ku771.pojo.TradingCenter" keyProperty="tradingId" useGeneratedKeys="true" >
+    insert into trading_center
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tradingId != null" >
+        tradingId,
+      </if>
+      <if test="memberId != null" >
+        memberId,
+      </if>
+      <if test="tradingDate != null" >
+        tradingDate,
+      </if>
+      <if test="tradingType != null" >
+        tradingType,
+      </if>
+      <if test="tradingContent != null" >
+        tradingContent,
+      </if>
+      <if test="accountNum != null" >
+        accountNum,
+      </if>
+      <if test="tradingMoney != null" >
+        tradingMoney,
+      </if>
+      <if test="tradingStatus != null" >
+        tradingStatus,
+      </if>
+      <if test="discount != null" >
+        discount,
+      </if>
+      <if test="serviceCharge != null" >
+        serviceCharge,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tradingId != null" >
+        #{tradingId,jdbcType=INTEGER},
+      </if>
+      <if test="memberId != null" >
+        #{memberId,jdbcType=INTEGER},
+      </if>
+      <if test="tradingDate != null" >
+        #{tradingDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tradingType != null" >
+        #{tradingType,jdbcType=INTEGER},
+      </if>
+      <if test="tradingContent != null" >
+        #{tradingContent,jdbcType=VARCHAR},
+      </if>
+      <if test="accountNum != null" >
+        #{accountNum,jdbcType=INTEGER},
+      </if>
+      <if test="tradingMoney != null" >
+        #{tradingMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="tradingStatus != null" >
+        #{tradingStatus,jdbcType=INTEGER},
+      </if>
+      <if test="discount != null" >
+        #{discount,jdbcType=VARCHAR},
+      </if>
+      <if test="serviceCharge != null" >
+        #{serviceCharge,jdbcType=DOUBLE},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 变更交易记录状态 -->
+  <update id="updateTradingRecord" parameterType="com.ku771.pojo.TradingCenter" >
+    update trading_center
+    <set >
+      <if test="tradingDate != null" >
+        tradingDate = #{tradingDate,jdbcType=VARCHAR},
+      </if>
+      <if test="tradingType != null" >
+        tradingType = #{tradingType,jdbcType=INTEGER},
+      </if>
+      <if test="accountNum != null" >
+        accountNum = #{accountNum,jdbcType=INTEGER},
+      </if>
+      <if test="tradingStatus != null" >
+        tradingStatus = #{tradingStatus,jdbcType=INTEGER},
+      </if>
+      <if test="serviceCharge != null" >
+        serviceCharge = #{serviceCharge,jdbcType=DOUBLE},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where tradingId = #{tradingId,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

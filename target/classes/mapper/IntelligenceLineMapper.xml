@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ku771.mapper.IntelligenceLineMapper" >
+  
+  <!-- 初始化第三方接入表 -->
+  <insert id="addInsert" parameterType="com.ku771.pojo.ThirdPartyInsert" >
+    insert into third_party_insert
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="memberId != null" >
+        memberId,
+      </if>
+      <if test="sonId != null" >
+        sonId,
+      </if>
+      <if test="insertStatus != null" >
+        insertStatus,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="memberId != null" >
+        #{memberId,jdbcType=INTEGER},
+      </if>
+      <if test="sonId != null" >
+        #{sonId,jdbcType=INTEGER},
+      </if>
+      <if test="insertStatus != null" >
+        #{insertStatus,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 更新接入状态 -->
+  <update id="updateInsert" parameterType="com.ku771.pojo.ThirdPartyInsert" >
+    update third_party_insert
+    <set >
+      <if test="insertStatus != null" >
+        insertStatus = #{insertStatus,jdbcType=INTEGER},
+      </if>
+    </set>
+    where memberId = #{memberId,jdbcType=INTEGER}
+    and sonId = #{sonId,jdbcType=INTEGER}
+  </update>
+</mapper>

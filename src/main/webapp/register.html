@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>register.html</title>
+	
+    <meta name="keywords" content="keyword1,keyword2,keyword3">
+    <meta name="description" content="this is my page">
+    <meta name="content-type" content="text/html; charset=UTF-8">
+    
+    <link rel="stylesheet" href="layui-2.4.3/css/layui.css">
+    
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript" src="layui-2.4.3/layui.js" charset="utf-8"></script>
+
+  </head>
+  
+  <body>
+  <div class="login" style="height:400px;width:50%">
+     <form class="layui-form">
+	    	<div style="margin-top:30px;" class="layui-form-item">
+				<input class="layui-input" id="distributorNum" name="distributorNum" placeholder="经销商账号(选填)" type="text" autocomplete="off">
+		    </div>
+	    	<div style="margin-top:30px;" class="layui-form-item">
+				<input class="layui-input" onchange="checkName()" id="memberNum" name="memberNum" placeholder="会员账号" type="text" autocomplete="off">
+		    </div>
+	    	<div style="margin-top:30px;" class="layui-form-item">
+				<input class="layui-input" id="nickName" name="nickName" placeholder="昵称" type="text" autocomplete="off">
+		    </div>
+		    <div style="margin-top:30px;" class="layui-form-item">
+				<input class="layui-input" id="password" placeholder="密码" lay-verify="required" type="password" autocomplete="off">
+		    </div>
+		    <div style="margin-top:30px;" class="layui-form-item">
+				<input class="layui-input" id="phoneNum" placeholder="手机号码" lay-verify="required" type="text" autocomplete="off">
+		    </div>
+		    <div style="margin-top:30px;" class="layui-form-item">
+				<input class="layui-input" id="verificationCode" placeholder="验证码（6位数字）" lay-verify="required" type="text" autocomplete="off">
+		    </div>
+			<button style="margin-top:10px;" class="layui-btn login_btn" lay-submit="" lay-filter="login">注册</button>
+		</form>
+		</div>
+  </body>
+  <script type="application/javascript">
+   layui.config({base : "js/"}).use('layer',function(){
+				var layer = parent.layer === undefined ? layui.layer : parent.layer;
+				var	$ = layui.jquery;
+				//video背景
+				});
+				 layui.use(['form','layer'], function(){
+		  			var form = layui.form;
+		  			var layer = layui.layer;
+				 //注册事件
+				 form.on("submit(login)",function(data){
+			       var memberNum = $("#memberNum").val();
+			       var nickName = $("#nickName").val();
+			       var distributorNum = $("#distributorNum").val();
+			       var password = $("#password").val();
+			       var phoneNum = $("#phoneNum").val();
+				   $.post("/member/register.do",{"memberNum":memberNum,"nickName":nickName,"distributorNum":distributorNum,"password":password,"phoneNum":phoneNum},function(result){
+			           // 注册成功
+			           if(result.success){
+			               window.location.href = "login.html";
+			       		   form.render();
+			           }else{
+			                layer.msg("注册失败");
+			           }
+			       });
+			       return false;
+				});
+			});
+	
+</script>
+<script>
+function checkName(){
+    var memberNum = $("#memberNum").val();
+    alert(memberNum);
+    $.ajax({
+   	 type : "POST",
+   	 url : "member/check_member_num.do",
+   	 dataType : "json",
+   	 data : {memberNum: memberNum},
+   	 async : true,
+   	 //设置为允许跨域
+   	 xhrFields: {
+   		 withCredentials: true
+   	 },
+   	 crossDomain: true, 
+   	 success: function (result) {
+   		if(result.status == 0){
+   			alert(result.msg);
+   		}else (result.status == 1){
+   			alert(result.msg);
+   			$("#memberNum").val("");
+   		}
+   	 },
+   	 error:function (textStatus) {//请求失败后调用的函数
+   	   layer.msg("fail");
+   	 }
+   }); 
+}
+</script>
+</html>

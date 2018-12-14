@@ -1,0 +1,6 @@
+0:0:0:0:0:0:0:1 - - [14/Dec/2018:11:20:03 +0800] "GET /intelligenceline/switch_line.do?sonId=2 HTTP/1.1" 302 - http-bio-8080-exec-1 131
+0:0:0:0:0:0:0:1 - - [14/Dec/2018:11:20:03 +0800] "GET /inserFail.html?msg=%E4%BC%9A%E5%91%98%E6%9C%AA%E7%99%BB%E5%BD%95 HTTP/1.1" 304 - http-bio-8080-exec-2 8
+0:0:0:0:0:0:0:1 - - [14/Dec/2018:11:20:07 +0800] "GET /member/login.do?memberNum=admin2&password=123456 HTTP/1.1" 200 393 http-bio-8080-exec-3 825
+0:0:0:0:0:0:0:1 - - [14/Dec/2018:11:20:18 +0800] "GET /intelligenceline/switch_line.do?sonId=2 HTTP/1.1" 302 - http-bio-8080-exec-4 133
+0:0:0:0:0:0:0:1 - - [14/Dec/2018:11:20:18 +0800] "GET /inserSuccess.html?memberInfo={%22memberName%22:%22%E8%8E%AB%E7%AD%89%E9%97%B22%22,%22memeberId%22:%226%22,%22sonId%22:%222%22,%22sonName%22:%22KU%E7%9C%9F%E4%BA%BA%22,%22balance%22:%220.0%22} HTTP/1.1" 200 592 http-bio-8080-exec-5 3
+0:0:0:0:0:0:0:1 - - [14/Dec/2018:11:21:39 +0800] "GET /intelligenceline/call_back_function.do?sonId=2&memberId=6&balance=900 HTTP/1.1" 200 - http-bio-8080-exec-7 113

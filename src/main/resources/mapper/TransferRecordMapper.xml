@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ku771.mapper.TransferRecordMapper" >
+  <resultMap id="RecordResultMap" type="com.ku771.pojo.example.TransferRecordExample" >
+    <id column="recordId" property="recordId" jdbcType="INTEGER" />
+    <result column="turnOutName" property="turnOutName" jdbcType="VARCHAR" />
+    <result column="turnInName" property="turnInName" jdbcType="VARCHAR" />
+    <result column="turnMoney" property="turnMoney" jdbcType="DOUBLE" />
+    <result column="turnDate" property="turnDate" jdbcType="VARCHAR" />
+    <result column="turnStatus" property="turnStatus" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <!-- 获取总条数 -->
+  <select id="getTotal" parameterType="map" resultType="int">
+     SELECT COUNT(*)
+     FROM transfer_record tr
+	 INNER JOIN son_account sa
+	 ON tr.turnOutId=sa.sonId
+	 INNER JOIN son_account saa
+	 ON tr.turnInId=saa.sonId
+	 WHERE 1=1
+     <if test="memberId != null">
+      AND tr.memberId = #{memberId}
+     </if>
+     <if test="turnInId != null">
+      AND tr.turnInId = #{turnInId}
+     </if>
+     <if test="startTurnDate != null">
+      AND turnDate &gt;= #{startTurnDate}
+     </if>
+     <if test="endTurnDate != null">
+      AND turnDate &lt;= #{endTurnDate}
+     </if>
+  </select>
+  
+  <!-- 分页查询转账记录 -->
+  <select id="getTransferRecordList" parameterType="map" resultMap="RecordResultMap">
+	 SELECT tr.recordId,sa.sonName AS turnOutName,saa.sonName AS turnInName,tr.turnMoney,date_format(tr.turnDate,'%Y-%m-%d %H:%m:%s')turnDate,tr.turnStatus
+	 FROM transfer_record tr
+	 INNER JOIN son_account sa
+	 ON tr.turnOutId=sa.sonId
+	 INNER JOIN son_account saa
+	 ON tr.turnInId=saa.sonId
+	 WHERE 1=1
+     <if test="memberId != null">
+      AND tr.memberId = #{memberId}
+     </if>
+     <if test="turnInId != null">
+      AND tr.turnInId = #{turnInId}
+     </if>
+     <if test="startTurnDate != null">
+      AND tr.turnDate &gt;= #{startTurnDate}
+     </if>
+     <if test="endTurnDate != null">
+      AND tr.turnDate &lt;= #{endTurnDate}
+     </if>
+  </select>
+    
+  <!-- 新增转账记录 -->
+  <insert id="addTransferRecord" parameterType="com.ku771.pojo.TransferRecord" >
+    insert into transfer_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="recordId != null" >
+        recordId,
+      </if>
+      <if test="memberId != null" >
+        memberId,
+      </if>
+      <if test="turnOutId != null" >
+        turnOutId,
+      </if>
+      <if test="turnInId != null" >
+        turnInId,
+      </if>
+      <if test="turnMoney != null" >
+        turnMoney,
+      </if>
+      <if test="turnDate != null" >
+        turnDate,
+      </if>
+      <if test="turnStatus != null" >
+        turnStatus,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="recordId != null" >
+        #{recordId,jdbcType=INTEGER},
+      </if>
+      <if test="memberId != null" >
+        #{memberId,jdbcType=INTEGER},
+      </if>
+      <if test="turnOutId != null" >
+        #{turnOutId,jdbcType=INTEGER},
+      </if>
+      <if test="turnInId != null" >
+        #{turnInId,jdbcType=INTEGER},
+      </if>
+      <if test="turnMoney != null" >
+        #{turnMoney,jdbcType=DOUBLE},
+      </if>
+      <if test="turnDate != null" >
+        #{turnDate,jdbcType=VARCHAR},
+      </if>
+      <if test="turnStatus != null" >
+        #{turnStatus,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+</mapper>

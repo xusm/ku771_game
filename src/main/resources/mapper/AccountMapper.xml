@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ku771.mapper.AccountMapper" >
+  <resultMap id="SonAccountResultMap" type="com.ku771.pojo.SonAccount" >
+    <id column="sonId" property="sonId" jdbcType="INTEGER" />
+    <result column="sonName" property="sonName" jdbcType="VARCHAR" />
+    <result column="lineAddr" property="lineAddr" jdbcType="VARCHAR" />
+    <result column="lineStatus" property="lineStatus" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="AccountResultMap" type="com.ku771.pojo.example.AccountExample" >
+    <id column="mainId" property="mainId" jdbcType="INTEGER" />
+    <result column="sonId" property="sonId" jdbcType="INTEGER" />
+    <result column="sonName" property="sonName" jdbcType="VARCHAR" />
+    <result column="memberId" property="memberId" jdbcType="INTEGER" />
+    <result column="balance" property="balance" jdbcType="DOUBLE" />
+    <result column="lineAddr" property="lineAddr" jdbcType="VARCHAR" />
+    <result column="lineStatus" property="lineStatus" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="LoadAccountResultMap" type="com.ku771.pojo.example.SonAccountLoadExample" >
+    <id column="sonId" property="sonId" jdbcType="INTEGER" />
+    <result column="sonName" property="sonName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Son_Account_Column_List" >
+    sonId, sonName, lineAddr,lineStatus,remark
+  </sql>
+  
+  
+  <!-- 查询共有多少个账户 -->
+  <select id="getAllAccount" resultMap="SonAccountResultMap">
+	  SELECT 
+	  <include refid="Son_Account_Column_List" />
+	  FROM son_account
+  </select>
+  
+  <!-- 获取当前会员的账户信息 -->
+  <select id="getAccountInfo" resultMap="AccountResultMap" parameterType="int" >
+	  SELECT a.mainId,a.sonId,sa.sonName,a.memberId,a.balance,sa.lineAddr,sa.lineStatus,sa.remark
+	  FROM account a
+	  INNER JOIN son_account sa
+	  ON a.sonId = sa.sonId
+	  WHERE a.memberId = #{memberId}
+  </select>
+  
+  <!-- 获取账户总金额 -->
+  <select id="getAccountTotalMoney" resultType="double" parameterType="int">
+	  SELECT sum(balance)
+	  FROM account
+	  WHERE memberId = #{memberId}
+  </select>
+  
+  <!-- 获取当前会员主账户信息 -->
+  <select id="getMainAccount" resultMap="AccountResultMap" parameterType="int" >
+	  SELECT a.mainId,a.sonId,sa.sonName,a.memberId,a.balance,sa.lineAddr,sa.lineStatus,sa.remark
+	  FROM account a
+	  INNER JOIN son_account sa
+	  ON a.sonId = sa.sonId
+	  WHERE a.memberId = #{memberId}
+	  AND sa.sonName = '主账户'
+  </select>
+  
+  <!-- 获取当前会员其他账户信息 -->
+  <select id="getTurnOutOrInAccount" resultMap="AccountResultMap" parameterType="int" >
+	  SELECT a.mainId,a.sonId,sa.sonName,a.memberId,a.balance,sa.lineAddr,sa.lineStatus,sa.remark
+	  FROM account a
+	  INNER JOIN son_account sa
+	  ON a.sonId = sa.sonId
+	  WHERE a.sonId = #{sonId}
+	  AND a.memberId = #{memberId}
+  </select>
+  
+  <!-- 加载所有账户（包括ID和名称） -->
+  <select id="loadAllAccount" resultMap="LoadAccountResultMap">
+	  SELECT sonId,sonName
+	  FROM son_account
+  </select>
+  
+  
+  <!-- 初始化会员账户 -->
+  <insert id="addAccount" parameterType="com.ku771.pojo.Account" >
+    insert into account
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="mainId != null" >
+        mainId,
+      </if>
+      <if test="sonId != null" >
+        sonId,
+      </if>
+      <if test="memberId != null" >
+        memberId,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="mainId != null" >
+        #{mainId,jdbcType=INTEGER},
+      </if>
+      <if test="sonId != null" >
+        #{sonId,jdbcType=INTEGER},
+      </if>
+      <if test="memberId != null" >
+        #{memberId,jdbcType=INTEGER},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  
+  <!-- 更新会员账户信息 -->
+  <update id="updateAccount" parameterType="com.ku771.pojo.Account" >
+    update account
+    <set >
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where mainId = #{mainId,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 根据会员ID和子账户ID修改账户余额 -->
+  <update id="updateAccountBySonIdAndMemberId" parameterType="com.ku771.pojo.Account" >
+    update account
+    <set >
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where memberId = #{memberId,jdbcType=INTEGER}
+    and sonId = #{sonId,jdbcType=INTEGER}
+  </update>
+  
+  <!-- 清空会员账户余额 -->
+  <update id="clearAccount" parameterType="com.ku771.pojo.Account" >
+    update account
+    <set >
+      <if test="balance != null" >
+        balance = 0,
+      </if>
+    </set>
+    where memberId = #{memberId,jdbcType=INTEGER}
+  </update>
+</mapper>
